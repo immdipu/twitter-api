@@ -13,6 +13,11 @@ const signup: RequestHandler = AsyncHandler(async (req, res, next) => {
     profilePic,
   }: userSchemaTypes = req.body;
 
+  if (!username || !password || !firstName || !lastName || !email) {
+    res.status(400);
+    throw new Error("Please enter all the fields");
+  }
+
   res.status(200).json("hello you are fired");
 });
 
