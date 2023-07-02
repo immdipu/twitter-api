@@ -6,7 +6,7 @@ export interface userSchemaTypes extends Document {
   username: string;
   email: string;
   password: string;
-  profilePic: string;
+  profilePic?: string;
   likes?: Types.ObjectId[];
   retweetPost?: Types.ObjectId[];
   following?: Types.ObjectId[];
