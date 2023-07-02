@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
-import { userSchema } from "../types/usertypes";
+import { userSchemaTypes } from "../types/usertypes";
 
-const UserSchema = new Schema<userSchema>(
+const UserSchema = new Schema<userSchemaTypes>(
   {
     firstName: {
       type: String,
@@ -30,12 +30,16 @@ const UserSchema = new Schema<userSchema>(
       required: [true, "password is required"],
     },
     profilePic: { type: String },
+    likes: [{ type: Schema.Types.ObjectId, ref: "Post" }],
+    retweetPost: [{ type: Schema.Types.ObjectId, ref: "Post" }],
+    followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    following: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },
   {
     timestamps: true,
   }
 );
 
-const User = model<userSchema>("User", UserSchema);
+const User = model<userSchemaTypes>("User", UserSchema);
 
 module.exports = User;
