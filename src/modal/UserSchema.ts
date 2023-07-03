@@ -30,7 +30,10 @@ const UserSchema = new Schema<userSchemaTypes>(
       required: [true, "password is required"],
       select: false,
     },
-    profilePic: { type: String },
+    profilePic: {
+      type: String,
+      default: "https://i5.extraimage.xyz/pix/2023/07/03/u6FQgX.jpg",
+    },
     likes: [{ type: Schema.Types.ObjectId, ref: "Post" }],
     retweetPost: [{ type: Schema.Types.ObjectId, ref: "Post" }],
     followers: [{ type: Schema.Types.ObjectId, ref: "User" }],

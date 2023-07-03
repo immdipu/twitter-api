@@ -58,4 +58,42 @@ const signup = AsyncHandler(
   }
 );
 
-export { signup };
+const login = AsyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { username, email, password }: userSchemaTypes = req.body;
+    if (!username && !email) {
+      res.status(400);
+      throw new Error("username or email is missing");
+    }
+    if (!password) {
+      res.status(400);
+      throw new Error("Password is missing");
+    }
+    const user = await User.findOne({ $or: [{ username }, { email }] }).select(
+      "+password"
+    );
+    if (!user) {
+      res.status(400);
+      throw new Error("No user found, check username or email");
+    }
+    if (password !== user.password) {
+      res.status(400);
+      throw new Error("password is wrong");
+    }
+    res.status(200).json({
+      id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      username: user.username,
+      token: jwtToken(user._id),
+      profilePic: user.profilePic,
+    });
+  }
+);
+
+const logout = AsyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {}
+);
+
+export { signup, login, logout };

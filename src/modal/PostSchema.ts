@@ -28,4 +28,4 @@ const PostSchema = new Schema<PostSchemaTypes>(
 
 const Post = model<PostSchemaTypes>("Post", PostSchema);
 
-module.exports = Post;
+export default Post;
