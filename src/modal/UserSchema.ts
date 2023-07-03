@@ -28,6 +28,7 @@ const UserSchema = new Schema<userSchemaTypes>(
     password: {
       type: String,
       required: [true, "password is required"],
+      select: false,
     },
     profilePic: { type: String },
     likes: [{ type: Schema.Types.ObjectId, ref: "Post" }],
@@ -42,4 +43,4 @@ const UserSchema = new Schema<userSchemaTypes>(
 
 const User = model<userSchemaTypes>("User", UserSchema);
 
-module.exports = User;
+export default User;
