@@ -49,12 +49,22 @@ const getAllTweets = AsyncHandler(
         },
       },
       {
+        $addFields: {
+          createdDate: {
+            $dateToString: {
+              date: "$createdAt",
+              format: "%Y-%m-%d %H:%M:%S",
+            },
+          },
+        },
+      },
+      {
         $project: {
           _id: 1,
           content: 1,
           likesCount: { $size: "$likes" },
           retweetCounts: { $size: "$retweetUsers" },
-          createdAt: 1,
+          createdDate: 1,
           postedBy: {
             $arrayElemAt: ["$postedBy", 0],
           },
