@@ -20,7 +20,7 @@ const postTweet = AsyncHandler(
 
     await post.populate({
       path: "postedBy",
-      select: "_id firstName lastName profilePic",
+      select: "_id firstName lastName profilePic username",
     });
     res.status(200).json(post);
   }
@@ -49,6 +49,42 @@ const getAllTweets = AsyncHandler(
         },
       },
       {
+        $lookup: {
+          from: "posts",
+          localField: "replyTo",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                content: 1,
+                postedBy: 1,
+              },
+            },
+            {
+              $lookup: {
+                from: "users",
+                localField: "postedBy",
+                foreignField: "_id",
+                pipeline: [
+                  {
+                    $project: {
+                      _id: 1,
+                      firstName: 1,
+                      lastName: 1,
+                      profilePic: 1,
+                      username: 1,
+                    },
+                  },
+                ],
+                as: "postedBy",
+              },
+            },
+          ],
+          as: "replyTo",
+        },
+      },
+      {
         $addFields: {
           createdDate: {
             $dateToString: {
@@ -68,16 +104,44 @@ const getAllTweets = AsyncHandler(
           postedBy: {
             $arrayElemAt: ["$postedBy", 0],
           },
+          replyTo: {
+            $arrayElemAt: ["$replyTo", 0],
+          },
         },
       },
       {
-        $sort: { createdAt: -1 },
+        $sort: { createdDate: -1 },
       },
     ]);
 
     const populatedTweets = await tweets.exec();
 
     res.status(200).json(populatedTweets);
+  }
+);
+
+const getSingleTweet = AsyncHandler(
+  async (req: IRequest, res: Response, next: NextFunction) => {
+    const postId = req.params.id;
+    const tweet = await Post.findById(postId).populate([
+      {
+        path: "likes",
+        select: "firstName lastName username profilePic ",
+      },
+      {
+        path: "postedBy",
+        select: "firstName lastName username profilePic",
+      },
+      {
+        path: "retweetUsers",
+        select: "firstName lastName username profilePic",
+      },
+    ]);
+    if (!tweet) {
+      res.status(404);
+      throw new Error("No tweet found");
+    }
+    res.status(200).json(tweet);
   }
 );
 
@@ -147,4 +211,38 @@ const reTweet = AsyncHandler(
   }
 );
 
-export { postTweet, getAllTweets, LikeTweet, reTweet };
+const replyToTweet = AsyncHandler(
+  async (req: IRequest, res: Response, next: NextFunction) => {
+    const { content, replyTo } = req.body;
+    if (!content || !replyTo) {
+      res.status(400);
+      throw new Error("some field are missing");
+    }
+    const post = Post.findById(replyTo);
+    if (!post) {
+      res.status(404);
+      throw new Error("Invalid Post");
+    }
+    const reply = await Post.create({
+      content,
+      replyTo,
+      postedBy: req.userId,
+    });
+    await reply.populate([
+      {
+        path: "postedBy",
+        select: "firstName lastName profilePic username",
+      },
+    ]);
+    res.status(200).json(reply);
+  }
+);
+
+export {
+  postTweet,
+  getAllTweets,
+  LikeTweet,
+  reTweet,
+  getSingleTweet,
+  replyToTweet,
+};
