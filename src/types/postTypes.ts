@@ -1,10 +1,11 @@
-import { Document, Types } from "mongoose";
+import { Document, Schema, Types } from "mongoose";
 
 export interface PostSchemaTypes extends Document {
   content: string;
   postedBy: Types.ObjectId;
   pinned?: boolean;
-  likes?: Types.ObjectId[];
+  likes?: Schema.Types.ObjectId[];
   retweetUsers?: Types.ObjectId[];
+  retweetData?: Schema.Types.ObjectId;
   replyTo?: Types.ObjectId[];
 }

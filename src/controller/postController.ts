@@ -1,5 +1,5 @@
 import Post from "../modal/PostSchema";
-import mongoose, { Aggregate } from "mongoose";
+import mongoose, { Aggregate, ObjectId, Schema } from "mongoose";
 import { Request, Response, NextFunction } from "express";
 import AsyncHandler from "express-async-handler";
 import User from "../modal/UserSchema";
@@ -81,4 +81,70 @@ const getAllTweets = AsyncHandler(
   }
 );
 
-export { postTweet, getAllTweets };
+const LikeTweet = AsyncHandler(
+  async (req: IRequest, res: Response, next: NextFunction) => {
+    let userId = req.userId;
+    let postId = req.params.id;
+    const post = await Post.findById(postId);
+    if (!post) {
+      res.status(400);
+      throw new Error("Tweet not found");
+    }
+
+    const isLiked = post.likes?.includes(userId!);
+    const option = isLiked ? "$pull" : "$addToSet";
+
+    await Post.findByIdAndUpdate(postId, {
+      [option]: { likes: userId },
+    });
+    await User.findByIdAndUpdate(userId, {
+      [option]: { likes: postId },
+    });
+
+    res.status(200).json({
+      Like: !isLiked,
+    });
+  }
+);
+
+const reTweet = AsyncHandler(
+  async (req: IRequest, res: Response, next: NextFunction) => {
+    const userId = req.userId;
+    const postId = req.params.id;
+    let deletePost = await Post.findOneAndDelete({
+      postedBy: userId,
+      retweetData: { $exists: true, $eq: postId },
+    });
+    const option = deletePost == null ? "$addToSet" : "$pull";
+
+    const updatedPost = await Post.findByIdAndUpdate(
+      postId,
+      {
+        [option]: { retweetUsers: userId },
+      },
+      { new: true }
+    );
+
+    await User.findByIdAndUpdate(
+      userId,
+      { [option]: { retweetPost: postId } },
+      { new: true }
+    );
+
+    if (deletePost === null) {
+      const retweet = await Post.create({
+        postedBy: userId,
+        retweetData: postId,
+      });
+      await retweet.populate({
+        path: "retweetData",
+        select: "content postedBy likes retweetUsers createdAt",
+      });
+      res.status(200).json(updatedPost);
+    } else {
+      res.status(200).json(updatedPost);
+    }
+  }
+);
+
+export { postTweet, getAllTweets, LikeTweet, reTweet };

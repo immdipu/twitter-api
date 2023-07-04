@@ -1,4 +1,4 @@
-import { Document, Types } from "mongoose";
+import { Document, Schema, Types } from "mongoose";
 
 export interface userSchemaTypes extends Document {
   firstName: string;
@@ -7,7 +7,7 @@ export interface userSchemaTypes extends Document {
   email: string;
   password: string;
   profilePic?: string;
-  likes?: Types.ObjectId[];
+  likes?: Schema.Types.ObjectId[];
   retweetPost?: Types.ObjectId[];
   following?: Types.ObjectId[];
   followers?: Types.ObjectId[];

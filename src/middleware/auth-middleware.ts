@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import AsyncHandler from "express-async-handler";
 import User from "../modal/UserSchema";
-import { Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import { userSchemaTypes } from "../types/usertypes";
 
 export interface IRequest extends Request {
@@ -30,7 +30,7 @@ const verifyToken = AsyncHandler(
       throw new Error("User doesn't exist");
     }
     if (user) {
-      req.userId = decode.id;
+      req.userId = decode.id as any;
       return next();
     }
     res.status(400);
