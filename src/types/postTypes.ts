@@ -2,7 +2,7 @@ import { Document, Schema, Types } from "mongoose";
 
 export interface PostSchemaTypes extends Document {
   content: string;
-  postedBy: Types.ObjectId;
+  postedBy: Schema.Types.ObjectId;
   pinned?: boolean;
   likes?: Schema.Types.ObjectId[];
   retweetUsers?: Schema.Types.ObjectId[];

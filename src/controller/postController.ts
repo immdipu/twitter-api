@@ -238,6 +238,27 @@ const replyToTweet = AsyncHandler(
   }
 );
 
+const deleteTweet = AsyncHandler(
+  async (req: IRequest, res: Response, next: NextFunction) => {
+    const postId = req.params.id;
+    const userId = req.userId;
+
+    const post = await Post.findById(postId);
+    if (!post) {
+      res.status(404);
+      throw new Error("Tweet not found");
+    }
+
+    if (post.postedBy.toString() !== userId!.toString()) {
+      res.status(403);
+      throw new Error("Unauthorized to delete this tweet");
+    }
+
+    await Post.findOneAndDelete({ _id: postId });
+    res.status(200).json("Tweet deleted successfully");
+  }
+);
+
 export {
   postTweet,
   getAllTweets,
@@ -245,4 +266,5 @@ export {
   reTweet,
   getSingleTweet,
   replyToTweet,
+  deleteTweet,
 };
