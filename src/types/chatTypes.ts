@@ -5,4 +5,5 @@ export interface chatTypes extends Document {
   isGroupChat: boolean;
   users: Schema.Types.ObjectId;
   lastestMessage: Schema.Types.ObjectId;
+  groupAdmin: Schema.Types.ObjectId;
 }

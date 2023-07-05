@@ -18,6 +18,10 @@ const chatSchema = new Schema<chatTypes>(
       },
     ],
     lastestMessage: { type: Schema.Types.ObjectId, ref: "Message" },
+    groupAdmin: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
   {
     timestamps: true,
