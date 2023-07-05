@@ -86,7 +86,7 @@ const getAllTweets = AsyncHandler(
       },
       {
         $addFields: {
-          createdDate: {
+          createdAt: {
             $dateToString: {
               date: "$createdAt",
               format: "%Y-%m-%d %H:%M:%S",
@@ -98,9 +98,9 @@ const getAllTweets = AsyncHandler(
         $project: {
           _id: 1,
           content: 1,
-          likesCount: { $size: "$likes" },
-          retweetCounts: { $size: "$retweetUsers" },
-          createdDate: 1,
+          likes: { $size: "$likes" },
+          retweets: { $size: "$retweetUsers" },
+          createdAt: 1,
           postedBy: {
             $arrayElemAt: ["$postedBy", 0],
           },
@@ -110,7 +110,7 @@ const getAllTweets = AsyncHandler(
         },
       },
       {
-        $sort: { createdDate: -1 },
+        $sort: { createdAt: -1 },
       },
     ]);
 
@@ -259,6 +259,23 @@ const deleteTweet = AsyncHandler(
   }
 );
 
+const pinPost = AsyncHandler(
+  async (req: IRequest, res: Response, next: NextFunction) => {
+    const postId = req.params.id;
+    await Post.updateMany({ postedBy: req.userId }, { pinned: false });
+    const post = await Post.findOneAndUpdate(
+      { _id: postId, postedBy: req.userId },
+      { pinned: true },
+      { new: true }
+    );
+    if (!post) {
+      res.status(404);
+      throw new Error("Tweet not found");
+    }
+    res.status(200).json("Tweet pinned successfully");
+  }
+);
+
 export {
   postTweet,
   getAllTweets,
@@ -267,4 +284,5 @@ export {
   getSingleTweet,
   replyToTweet,
   deleteTweet,
+  pinPost,
 };

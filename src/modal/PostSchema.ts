@@ -13,6 +13,7 @@ const PostSchema = new Schema<PostSchemaTypes>(
     },
     pinned: {
       type: Boolean,
+      default: false,
     },
     likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
     retweetUsers: [{ type: Schema.Types.ObjectId, ref: "User" }],

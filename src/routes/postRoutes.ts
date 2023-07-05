@@ -6,6 +6,7 @@ import {
   getSingleTweet,
   replyToTweet,
   deleteTweet,
+  pinPost,
 } from "../controller/postController";
 import { Router } from "express";
 import verifyToken from "../middleware/auth-middleware";
@@ -18,5 +19,6 @@ router.delete("/:id", verifyToken, deleteTweet);
 router.put("/:id/like", verifyToken, LikeTweet);
 router.post("/:id/retweet", verifyToken, reTweet);
 router.post("/reply", verifyToken, replyToTweet);
+router.put("/:id", verifyToken, pinPost);
 
 export default router;
