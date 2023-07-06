@@ -1,9 +1,10 @@
 import AsyncHandler from "express-async-handler";
-import { NextFunction, Request, Response } from "express";
-import mongoose from "mongoose";
+import { NextFunction, Request, Response, response } from "express";
+import mongoose, { Schema } from "mongoose";
 import User from "../modal/UserSchema";
 import { userSchemaTypes } from "../types/usertypes";
 import jwt from "jsonwebtoken";
+import { request } from "http";
 
 const jwtToken = (id: string) => {
   return jwt.sign({ id }, process.env.JWT_SECRET!, {
@@ -92,8 +93,28 @@ const login = AsyncHandler(
   }
 );
 
+const Autologin = AsyncHandler(async (req: Request, res: Response, next) => {
+  const auth = req.headers["authorization"];
+  const token = auth?.split(" ")[0];
+  if (!token) {
+    res.status(401);
+    throw new Error("Unauthorized, No token found");
+  }
+  const decode = jwt.verify(token, process.env.JWT_SECRET!) as {
+    id: Schema.Types.ObjectId;
+  };
+  const user: userSchemaTypes | null = await User.findById(decode.id).select(
+    "firstName lastName email username createdAt profilePic"
+  );
+  if (!user) {
+    res.status(400);
+    throw new Error("User doesn't exist");
+  }
+  res.status(200).json(user);
+});
+
 const logout = AsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {}
 );
 
-export { signup, login, logout };
+export { signup, login, logout, Autologin };
