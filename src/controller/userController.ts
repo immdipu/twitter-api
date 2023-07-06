@@ -95,7 +95,7 @@ const login = AsyncHandler(
 
 const Autologin = AsyncHandler(async (req: Request, res: Response, next) => {
   const auth = req.headers["authorization"];
-  const token = auth?.split(" ")[0];
+  const token = auth?.split(" ")[1];
   if (!token) {
     res.status(401);
     throw new Error("Unauthorized, No token found");
