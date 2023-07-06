@@ -9,22 +9,24 @@ import chatRoutes from "./routes/chatRoutes";
 import dotenv from "dotenv";
 import { Request, Response, NextFunction } from "express";
 import connectDB from "./utils/db";
+import cors from "cors";
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
-app.use((req: Request, res: Response, next: NextFunction) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, PATCH"
-  );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  next();
-});
+// app.use((req: Request, res: Response, next: NextFunction) => {
+//   res.setHeader("Access-Control-Allow-Origin", "*");
+//   res.setHeader(
+//     "Access-Control-Allow-Methods",
+//     "GET, POST, PUT, DELETE, PATCH"
+//   );
+//   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+//   next();
+// });
 
 app.use("/user", userRoutes);
 app.use("/tweet", postRoutes);
