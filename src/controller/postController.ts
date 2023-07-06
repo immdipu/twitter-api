@@ -81,6 +81,16 @@ const getAllTweets = AsyncHandler(
                 as: "postedBy",
               },
             },
+            {
+              $project: {
+                _id: 1,
+                content: 1,
+                createdAt: 1,
+                postedBy: {
+                  $arrayElemAt: ["$postedBy", 0],
+                },
+              },
+            },
           ],
           as: "replyTo",
         },
@@ -116,6 +126,16 @@ const getAllTweets = AsyncHandler(
                   },
                 ],
                 as: "postedBy",
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                content: 1,
+                createdAt: 1,
+                postedBy: {
+                  $arrayElemAt: ["$postedBy", 0],
+                },
               },
             },
           ],
