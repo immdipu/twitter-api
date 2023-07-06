@@ -7,6 +7,10 @@ const PostSchema = new Schema<PostSchemaTypes>(
       type: String,
       trim: true,
     },
+    type: {
+      type: String,
+      required: true,
+    },
     postedBy: {
       type: Schema.Types.ObjectId,
       ref: "User",

@@ -14,6 +14,7 @@ const postTweet = AsyncHandler(
       throw new Error("please write some tweet");
     }
     const post = await Post.create({
+      type: "tweet",
       content,
       postedBy: req.userId,
     });
@@ -85,18 +86,46 @@ const getAllTweets = AsyncHandler(
         },
       },
       {
-        $addFields: {
-          createdAt: {
-            $dateToString: {
-              date: "$createdAt",
-              format: "%Y-%m-%d %H:%M:%S",
+        $lookup: {
+          from: "posts",
+          localField: "retweetData",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                content: 1,
+                createdAt: 1,
+                postedBy: 1,
+              },
             },
-          },
+            {
+              $lookup: {
+                from: "users",
+                localField: "postedBy",
+                foreignField: "_id",
+                pipeline: [
+                  {
+                    $project: {
+                      _id: 1,
+                      firstName: 1,
+                      lastName: 1,
+                      profilePic: 1,
+                      username: 1,
+                    },
+                  },
+                ],
+                as: "postedBy",
+              },
+            },
+          ],
+          as: "retweetData",
         },
       },
       {
         $project: {
           _id: 1,
+          type: 1,
           content: 1,
           likes: { $size: "$likes" },
           retweets: { $size: "$retweetUsers" },
@@ -106,6 +135,9 @@ const getAllTweets = AsyncHandler(
           },
           replyTo: {
             $arrayElemAt: ["$replyTo", 0],
+          },
+          retweetData: {
+            $arrayElemAt: ["$retweetData", 0],
           },
         },
       },
@@ -197,6 +229,7 @@ const reTweet = AsyncHandler(
 
     if (deletePost === null) {
       const retweet = await Post.create({
+        type: "reweet",
         postedBy: userId,
         retweetData: postId,
       });
@@ -224,6 +257,7 @@ const replyToTweet = AsyncHandler(
       throw new Error("Invalid Post");
     }
     const reply = await Post.create({
+      type: "reply",
       content,
       replyTo,
       postedBy: req.userId,
