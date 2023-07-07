@@ -249,7 +249,7 @@ const reTweet = AsyncHandler(
 
     if (deletePost === null) {
       const retweet = await Post.create({
-        type: "reweet",
+        type: "retweet",
         postedBy: userId,
         retweetData: postId,
       });
