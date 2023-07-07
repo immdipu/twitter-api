@@ -194,6 +194,15 @@ const getSingleTweet = AsyncHandler(
         path: "retweetUsers",
         select: "firstName lastName username profilePic",
       },
+      {
+        path: "replies",
+        select:
+          "content postedBy likes retweetUsers replies profilePic content createdAt type replyTo",
+        populate: {
+          path: "postedBy",
+          select: "firstName lastName username profilePic",
+        },
+      },
     ]);
     if (!tweet) {
       res.status(404);
