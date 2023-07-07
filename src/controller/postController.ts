@@ -103,6 +103,7 @@ const getAllTweets = AsyncHandler(
           pipeline: [
             {
               $project: {
+                likes: 1,
                 _id: 1,
                 content: 1,
                 createdAt: 1,
@@ -132,6 +133,7 @@ const getAllTweets = AsyncHandler(
               $project: {
                 _id: 1,
                 content: 1,
+                likes: 1,
                 retweetUsers: 1,
                 createdAt: 1,
                 postedBy: {
