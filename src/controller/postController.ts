@@ -104,9 +104,11 @@ const getAllTweets = AsyncHandler(
             {
               $project: {
                 likes: 1,
+                retweetUsers: 1,
                 _id: 1,
                 content: 1,
                 createdAt: 1,
+
                 postedBy: 1,
               },
             },
