@@ -132,6 +132,7 @@ const getAllTweets = AsyncHandler(
               $project: {
                 _id: 1,
                 content: 1,
+                retweetUsers: 1,
                 createdAt: 1,
                 postedBy: {
                   $arrayElemAt: ["$postedBy", 0],
