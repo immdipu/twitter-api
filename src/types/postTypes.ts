@@ -6,6 +6,7 @@ export interface PostSchemaTypes extends Document {
   pinned?: boolean;
   type: "tweet" | "reply" | "retweet";
   likes?: Schema.Types.ObjectId[];
+  replies: Schema.Types.ObjectId[];
   retweetUsers?: Schema.Types.ObjectId[];
   retweetData?: Schema.Types.ObjectId;
   replyTo?: Schema.Types.ObjectId[];

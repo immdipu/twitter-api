@@ -277,17 +277,24 @@ const replyToTweet = AsyncHandler(
       res.status(400);
       throw new Error("some field are missing");
     }
-    const post = Post.findById(replyTo);
+    let post = await Post.findById(replyTo);
+
     if (!post) {
       res.status(404);
       throw new Error("Invalid Post");
     }
+
     const reply = await Post.create({
       type: "reply",
       content,
       replyTo,
       postedBy: req.userId,
     });
+
+    if (reply) {
+      post.replies.push(reply._id);
+      await post.save();
+    }
     await reply.populate([
       {
         path: "postedBy",
