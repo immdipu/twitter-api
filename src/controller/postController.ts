@@ -60,6 +60,7 @@ const getAllTweets = AsyncHandler(
                 _id: 1,
                 content: 1,
                 postedBy: 1,
+                createdAt: 1,
               },
             },
             {
