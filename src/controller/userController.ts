@@ -82,7 +82,7 @@ const login = AsyncHandler(
       throw new Error("password is wrong");
     }
     res.status(200).json({
-      id: user._id,
+      _id: user._id,
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
