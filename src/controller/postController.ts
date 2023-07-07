@@ -110,7 +110,6 @@ const getAllTweets = AsyncHandler(
                 replies: 1,
                 content: 1,
                 createdAt: 1,
-
                 postedBy: 1,
               },
             },
