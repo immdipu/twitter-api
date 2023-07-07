@@ -154,6 +154,7 @@ const getAllTweets = AsyncHandler(
           type: 1,
           content: 1,
           likes: 1,
+          replies: 1,
           retweetUsers: 1,
           createdAt: 1,
           postedBy: {
